@@ -141,7 +141,7 @@ export class AutoCompleteProvider
         const additionalContext = this.getAdditionalContext(document);
         const { prompt, stop } =
           this.autoCompleteTemplateProvider.getAutoCompletePrompt(
-            this.ai.getModel(),
+            this.ai.getModel("autocomplete"),
             { additionalContext, prefix, suffix }
           );
         const response = await this.ai.generateText({

@@ -14,6 +14,7 @@ import * as vscode from "vscode";
 import { z } from "zod";
 import { Logger } from "../logger";
 import { ApiKeyManager } from "./ApiKeyManager";
+import { EnumAsUnion } from '../types/util';
 
 function getProviderBaseUrl(): string {
   let defaultUrl = "http://localhost:8080/";
@@ -61,6 +62,11 @@ function getPromptTemplate() {
   return ollama.prompt.Llama2;
 }
 
+enum MODE_PURPOSE {
+  CHAT = "chat",
+  AUTOCOMPLETE = "autocomplete"
+};
+
 export class AIClient {
   private readonly apiKeyManager: ApiKeyManager;
   private readonly logger: Logger;
@@ -76,7 +82,7 @@ export class AIClient {
     this.logger = logger;
   }
 
-  public getModel(feature: string = "chat"): string {
+  public getModel(feature: EnumAsUnion<typeof MODE_PURPOSE>): string {
     if (feature != "chat") {
       this.logger.log(["Autocomplete Model: ", getAutoCompleteModel()]);
       return getAutoCompleteModel();
@@ -120,7 +126,7 @@ export class AIClient {
       .CompletionTextGenerator({
         api: await this.getProviderApiConfiguration(),
         promptTemplate: getPromptTemplate(),
-        model: this.getModel(),
+        model: this.getModel("chat"),
         maxGenerationTokens: maxTokens,
         stopSequences: stop,
         temperature,
